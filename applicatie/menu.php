@@ -27,10 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product'], $_POST['aa
 
         // Voeg het product toe aan de bestelling
         if (isset($_SESSION['bestelling'][$product])) {
-            $_SESSION['bestelling'][$product] += $aantal;
+            $_SESSION['bestelling'][$product]['aantal'] += $aantal;
         } else {
             $_SESSION['bestelling'][$product] = ['aantal' => $aantal, 'prijs' => $prijs];
         }
+        // Redirect naar dezelfde pagina om het POST-verzoek te voorkomen bij het vernieuwen
+        header('Location: menu.php');
+        exit();
     }
 }
 
