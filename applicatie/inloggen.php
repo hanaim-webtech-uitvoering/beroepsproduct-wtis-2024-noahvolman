@@ -51,5 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Inloggen</button>
     </form>
     <p>Nog geen account? <a href="registreren.php">Registreren</a> of <a href="menu.php">ga verder als gast</a></p>
+    <p>lees <a href="privacy.php">hier</a> onze privacyverklaring </p>
 </body>
 </html>

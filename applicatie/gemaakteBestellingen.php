@@ -19,13 +19,13 @@ $order_details = $stmt->fetchAll();
 function getStatusName($status) {
     switch ($status) {
         case 1:
-            return 'in afwachting';
+            return 'wordt verwerkt';
         case 2:
             return 'bezig';
         case 3:
             return 'voltooid';
         default:
-            return 'Unknown';
+            return 'onbekend';
     }
 }
 ?>

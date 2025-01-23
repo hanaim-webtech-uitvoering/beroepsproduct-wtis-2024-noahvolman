@@ -31,6 +31,8 @@ $order_details = $stmt->fetchAll();
         table, td, th { border: 1px solid black; padding: 5px; }
         table { border-collapse: collapse; width: 100%; }
         th, td { text-align: left; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 15px; text-decoration: none; }
     </style>
 </head>
 <body>

@@ -27,13 +27,13 @@ $order_details = $data->fetchAll();
 function getStatusName($status) {
     switch ($status) {
         case 1:
-            return 'in afwachting';
+            return 'wordt verwerkt';
         case 2:
             return 'bezig';
         case 3:
             return 'voltooid';
         default:
-            return 'Unknown';
+            return 'onbekend';
     }
 }
 ?>
@@ -42,11 +42,13 @@ function getStatusName($status) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bestelling Overzicht</title>
+    <title>Overzicht van bestellingen</title>
     <style>
         table, td, th { border: 1px solid black; padding: 5px; }
         table { border-collapse: collapse; width: 100%; }
         th, td { text-align: left; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 15px; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -69,7 +71,7 @@ function getStatusName($status) {
                 <form method="post" style="display:inline;">
                     <input type="hidden" name="order_id" value="' . htmlspecialchars($detail['order_id']) . '">
                     <select name="status">
-                        <option value="1"' . ($detail['status'] === 1 ? ' selected' : '') . '>in afwachting</option>
+                        <option value="1"' . ($detail['status'] === 1 ? ' selected' : '') . '>wordt verwerkt</option>
                         <option value="2"' . ($detail['status'] === 2 ? ' selected' : '') . '>bezig</option>
                         <option value="3"' . ($detail['status'] === 3 ? ' selected' : '') . '>voltooid</option>
                     </select>

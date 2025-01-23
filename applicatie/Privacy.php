@@ -15,6 +15,18 @@
         p {
             line-height: 1.6;
         }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .back-link:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -46,5 +58,9 @@
     <p>Voor vragen over deze privacyverklaring of over onze verwerking van uw persoonsgegevens kunt u contact met ons opnemen via:</p>
     <p>Email: info@uwbedrijf.nl</p>
     <p>Telefoon: 012-3456789</p>
+
+    <?php if (isset($_SERVER['HTTP_REFERER'])): ?>
+        <a href="<?php echo htmlspecialchars($_SERVER['HTTP_REFERER']); ?>" class="back-link">Ga terug</a>
+    <?php endif; ?>
 </body>
 </html>

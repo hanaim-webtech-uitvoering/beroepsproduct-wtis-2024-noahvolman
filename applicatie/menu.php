@@ -102,6 +102,7 @@ $html_table .= '</table>';
             <a href="menu.php">Menu</a>
             <a href="gemaakteBestellingen.php">Mijn Bestellingen</a>
         <?php endif; ?>
+        <a href="privacy.php">Privacyverklaring</a>
         <a href="logout.php">Uitloggen</a>
     </nav>
     <h1>Menu</h1>
