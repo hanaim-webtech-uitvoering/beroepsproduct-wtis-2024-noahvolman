@@ -11,31 +11,48 @@ if (!isset($_SESSION['role'])) {
     $_SESSION['role'] = 'guest';
 }
 
-// Verwerk formulierinvoer
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product'], $_POST['aantal'])) {
-    $product = $_POST['product'];
-    $aantal = (int)$_POST['aantal'];
-
-    if ($aantal > 0) {
-
-             // Haal de prijs van het product op
-             $db = maakVerbinding();
-             $stmt = $db->prepare('SELECT price FROM Product WHERE name = ?');
-             $stmt->execute([$product]);
-             $result = $stmt->fetch();
-             $prijs = $result['price'];
-
-        // Voeg het product toe aan de bestelling
-        if (isset($_SESSION['bestelling'][$product])) {
-            $_SESSION['bestelling'][$product]['aantal'] += $aantal;
-        } else {
-            $_SESSION['bestelling'][$product] = ['aantal' => $aantal, 'prijs' => $prijs];
-        }
-        // Redirect naar dezelfde pagina om het POST-verzoek te voorkomen bij het vernieuwen
+// Verwerk adresinvoer
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['address'])) {
+    $address = trim($_POST['address']);
+    if (!empty($address)) {
+        $_SESSION['address'] = $address;
         header('Location: menu.php');
         exit();
+    } else {
+        $address_error = "Adres is verplicht.";
     }
 }
+
+// Verwerk formulierinvoer
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product'], $_POST['aantal'])) {
+        // Controleer of het adres is ingesteld
+        if (!isset($_SESSION['address'])) {
+            $address_error = "Je moet eerst je adres invoeren voordat je een bestelling kunt plaatsen.";
+        } else {
+            $product = $_POST['product'];
+            $aantal = (int)$_POST['aantal'];
+
+            if ($aantal > 0) {
+
+                // Haal de prijs van het product op
+                $db = maakVerbinding();
+                $stmt = $db->prepare('SELECT price FROM Product WHERE name = ?');
+                $stmt->execute([$product]);
+                $result = $stmt->fetch();
+                $prijs = $result['price'];
+
+                // Voeg het product toe aan de bestelling
+                if (isset($_SESSION['bestelling'][$product])) {
+                    $_SESSION['bestelling'][$product]['aantal'] += $aantal;
+                } else {
+                    $_SESSION['bestelling'][$product] = ['aantal' => $aantal, 'prijs' => $prijs];
+                }
+                // Redirect naar dezelfde pagina om het POST-verzoek te voorkomen bij het vernieuwen
+                header('Location: menu.php');
+                exit();
+            }
+        }
+    }
 
 // Haal menu-items op uit de database
 $db = maakVerbinding();
@@ -75,12 +92,16 @@ $html_table .= '</table>';
         table, td, th { border: 1px solid black; padding: 5px; }
         table { border-collapse: collapse; width: 100%; }
         th, td { text-align: left; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 15px; text-decoration: none; }
     </style>
 </head>
 <body>
 <nav>
-        <a href="menu.php">Menu</a>
-        <a href="gemaakteBestellingen.php">Mijn Bestellingen</a>
+        <?php if ($_SESSION['role'] !== 'guest'): ?>
+            <a href="menu.php">Menu</a>
+            <a href="gemaakteBestellingen.php">Mijn Bestellingen</a>
+        <?php endif; ?>
         <a href="logout.php">Uitloggen</a>
     </nav>
     <h1>Menu</h1>
@@ -106,6 +127,17 @@ $html_table .= '</table>';
     } else {
         echo '<p>Je hebt nog niets toegevoegd aan je bestelling.</p>';
     }
-    ?>
+ // Toon het adresformulier als het adres niet is ingesteld
+ if (!isset($_SESSION['address'])) {
+    echo '<h2>Voer je adres in om een bestelling te plaatsen</h2>';
+    if (isset($address_error)) {
+        echo '<p style="color:red;">' . htmlspecialchars($address_error) . '</p>';
+    }
+    echo '<form method="post">
+            <label>Adres: <input type="text" name="address" required></label>
+            <button type="submit">Opslaan</button>
+          </form>';
+}
+?>
 </body>
 </html>

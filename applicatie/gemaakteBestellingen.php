@@ -12,7 +12,7 @@ $username = $_SESSION['username'];
 
 // Haal alle bestellingen van de ingelogde gebruiker op
 $db = maakVerbinding();
-$stmt = $db->prepare('SELECT P.order_id, PP.product_name, PP.quantity, P.address, P.status, P.datetime FROM Pizza_Order P JOIN Pizza_Order_Product PP ON P.order_id = PP.order_id WHERE P.client_username = ?');
+$stmt = $db->prepare('SELECT P.order_id, P.status, P.address, P.datetime FROM Pizza_Order P WHERE P.client_username = ?');
 $stmt->execute([$username]);
 $order_details = $stmt->fetchAll();
 
@@ -39,6 +39,8 @@ function getStatusName($status) {
         table, td, th { border: 1px solid black; padding: 5px; }
         table { border-collapse: collapse; width: 100%; }
         th, td { text-align: left; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 15px; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -51,16 +53,15 @@ function getStatusName($status) {
     <?php
     if (!empty($order_details)) {
         echo '<table>';
-        echo '<tr><th>Order ID</th><th>Product Naam</th><th>Aantal</th><th>Status</th><th>Adres</th><th>Datum en Tijd</th></tr>';
+        echo '<tr><th>Order ID</th><th>Status</th><th>Adres</th><th>Datum en Tijd</th><th>Details</th></tr>';
         foreach ($order_details as $detail) {
             $status_name = getStatusName($detail['status']);
             echo '<tr>';
             echo '<td>' . htmlspecialchars($detail['order_id']) . '</td>';
-            echo '<td>' . htmlspecialchars($detail['product_name']) . '</td>';
-            echo '<td>' . htmlspecialchars($detail['quantity']) . '</td>';
             echo '<td>' . htmlspecialchars($status_name) . '</td>';
             echo '<td>' . htmlspecialchars($detail['address']) . '</td>';
             echo '<td>' . htmlspecialchars($detail['datetime']) . '</td>';
+            echo '<td><a href="detailOverzicht.php?order_id=' . htmlspecialchars($detail['order_id']) . '">Bekijk Details</a></td>';
             echo '</tr>';
         }
         echo '</table>';

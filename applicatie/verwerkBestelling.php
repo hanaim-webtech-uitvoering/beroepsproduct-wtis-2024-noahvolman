@@ -4,8 +4,8 @@ session_start();
 
 // Controleer of de gebruiker is ingelogd
 if (!isset($_SESSION['username'])) {
-    echo 'Toegang geweigerd. Je moet ingelogd zijn om een bestelling te plaatsen.';
-    exit();
+    $_SESSION['username'] = 'gast';
+    $_SESSION['client_name'] = 'Gast Gebruiker';
 }
 
 $username = $_SESSION['username'];
@@ -26,7 +26,7 @@ try {
 
     // Voeg de bestelling toe aan de Pizza_Order tabel
     $stmt = $db->prepare('INSERT INTO Pizza_Order (client_username, client_name, personnel_username, datetime, status, address) VALUES (?, ?, ?, ?, ?, ?)');
-    $stmt->execute([$username, $client_name, 'abrouwer', date('Y-m-d H:i:s'), 1, $address]);
+    $stmt->execute([$username , $client_name, 'abrouwer', date('Y-m-d H:i:s'), 1, $address]);
     $order_id = $db->lastInsertId();
 
     // Voeg de producten toe aan de Pizza_Order_Product tabel

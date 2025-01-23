@@ -2,9 +2,9 @@
 require_once 'db_connectie.php';
 session_start();
 
-// Controleer of de gebruiker personeel is
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Personnel') {
-    echo 'Toegang geweigerd. Alleen personeel kan deze pagina bekijken.';
+// Controleer of de gebruiker is ingelogd
+if (!isset($_SESSION['username'])) {
+    echo 'Toegang geweigerd. Je moet ingelogd zijn om deze pagina te bekijken.';
     exit();
 }
 
@@ -26,7 +26,7 @@ $order_details = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bestellings details</title>
+    <title>bestellingsdetails</title>
     <style>
         table, td, th { border: 1px solid black; padding: 5px; }
         table { border-collapse: collapse; width: 100%; }
@@ -34,7 +34,7 @@ $order_details = $stmt->fetchAll();
     </style>
 </head>
 <body>
-    <h1>Details van de bestelling met orderid <?php echo $order_id ?></h1>
+    <h1>Details van de bestelling met order ID <?php echo htmlspecialchars($order_id); ?></h1>
     <?php
     if (!empty($order_details)) {
         echo '<table>';
@@ -51,8 +51,12 @@ $order_details = $stmt->fetchAll();
     } else {
         echo '<p>Geen details gevonden voor deze bestelling.</p>';
     }
-
+   // Toon de juiste link op basis van de rol van de gebruiker
+   if (isset($_SESSION['role']) && $_SESSION['role'] === 'Personnel') {
     echo '<p><a href="bestellingOverzicht.php">Terug naar bestelling overzicht</a></p>';
-    ?>
+} else {
+    echo '<p><a href="gemaakteBestellingen.php">Ga terug naar je bestellingen</a></p>';
+}
+?>
 </body>
 </html>
