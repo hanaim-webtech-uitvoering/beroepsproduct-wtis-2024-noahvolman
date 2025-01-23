@@ -101,9 +101,12 @@ $html_table .= '</table>';
         <?php if ($_SESSION['role'] !== 'guest'): ?>
             <a href="menu.php">Menu</a>
             <a href="gemaakteBestellingen.php">Mijn Bestellingen</a>
+            <a href="logout.php">Uitloggen</a>
         <?php endif; ?>
+        <?php if ($_SESSION['role'] === 'guest'): ?>
+            <a href="inloggen.php">Inloggen</a>
+            <?php endif; ?>
         <a href="privacy.php">Privacyverklaring</a>
-        <a href="logout.php">Uitloggen</a>
     </nav>
     <h1>Menu</h1>
     <?php echo $html_table; ?>
