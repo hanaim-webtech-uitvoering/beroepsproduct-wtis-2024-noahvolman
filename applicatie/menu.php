@@ -7,19 +7,30 @@ if (!isset($_SESSION['bestelling'])) {
     $_SESSION['bestelling'] = [];
 }
 
+if (!isset($_SESSION['role'])) {
+    $_SESSION['role'] = 'guest';
+}
+
 // Verwerk formulierinvoer
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product'], $_POST['aantal'])) {
     $product = $_POST['product'];
     $aantal = (int)$_POST['aantal'];
 
     if ($aantal > 0) {
+
+             // Haal de prijs van het product op
+             $db = maakVerbinding();
+             $stmt = $db->prepare('SELECT price FROM Product WHERE name = ?');
+             $stmt->execute([$product]);
+             $result = $stmt->fetch();
+             $prijs = $result['price'];
+
         // Voeg het product toe aan de bestelling
         if (isset($_SESSION['bestelling'][$product])) {
             $_SESSION['bestelling'][$product] += $aantal;
         } else {
-            $_SESSION['bestelling'][$product] = $aantal;
+            $_SESSION['bestelling'][$product] = ['aantal' => $aantal, 'prijs' => $prijs];
         }
-        echo "<p>$product is toegevoegd aan je bestelling ($aantal).</p>";
     }
 }
 
@@ -64,17 +75,31 @@ $html_table .= '</table>';
     </style>
 </head>
 <body>
-    <h1>Bestellingskaart</h1>
+<nav>
+        <a href="menu.php">Menu</a>
+        <a href="gemaakteBestellingen.php">Mijn Bestellingen</a>
+        <a href="logout.php">Uitloggen</a>
+    </nav>
+    <h1>Menu</h1>
     <?php echo $html_table; ?>
 
     <h2>Jouw Bestelling</h2>
     <?php
     if (!empty($_SESSION['bestelling'])) {
         echo '<ul>';
-        foreach ($_SESSION['bestelling'] as $product => $aantal) {
-            echo "<li>$product: $aantal </li>";
+        $totaal_bedrag = 0;
+        foreach ($_SESSION['bestelling'] as $product => $details) {
+            $aantal = $details['aantal'];
+            $prijs = $details['prijs'];
+            $bedrag = $aantal * $prijs;
+            $totaal_bedrag += $bedrag;
+            echo "<li>$product: $aantal x €$prijs = €$bedrag</li>";
         }
+        echo "<li><strong>Totaal: €$totaal_bedrag</strong></li>";
         echo '</ul>';
+        echo '<form method="post" action="verwerkBestelling.php">
+                <button type="submit">Bestelling Plaatsen</button>
+              </form>';
     } else {
         echo '<p>Je hebt nog niets toegevoegd aan je bestelling.</p>';
     }

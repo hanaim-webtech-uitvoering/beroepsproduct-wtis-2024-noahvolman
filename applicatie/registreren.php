@@ -1,5 +1,7 @@
 <?php
 require_once 'db_connectie.php';
+session_start();
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
@@ -7,6 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $first_name = trim($_POST['first_name']);
     $last_name = trim($_POST['last_name']);
     $address = trim($_POST['address']);
+
+    $client_name = $first_name . ' ' . $last_name;
+    $_SESSION['client_name'] = $client_name;
+    $_SESSION['address'] = $address;
 
     if (!empty($username) && !empty($password) && !empty($first_name) && !empty($last_name)) {
         // Hash het wachtwoord

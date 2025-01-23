@@ -51,6 +51,8 @@ $order_details = $stmt->fetchAll();
     } else {
         echo '<p>Geen details gevonden voor deze bestelling.</p>';
     }
+
+    echo '<p><a href="bestellingOverzicht.php">Terug naar bestelling overzicht</a></p>';
     ?>
 </body>
 </html>

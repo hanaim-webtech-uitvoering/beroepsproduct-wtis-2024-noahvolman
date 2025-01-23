@@ -10,16 +10,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db = maakVerbinding();
 
         // Zoek gebruiker op basis van username
-        $stmt = $db->prepare('SELECT username, password, role FROM "User" WHERE username = ?');
-        $stmt->execute([$username]);
-        $user = $stmt->fetch();
+         $stmt = $db->prepare('SELECT username, password, first_name, last_name, address, role FROM "User" WHERE username = ?');
+         $stmt->execute([$username]);
+         $user = $stmt->fetch();
 
         if ($user && password_verify($password, $user['password'])) {
             // Wachtwoord klopt
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
+            $_SESSION['client_name'] = $user['first_name'] . ' ' . $user['last_name'];
+            $_SESSION['address'] = $user['address'];
 
-            echo "Welkom, " . htmlspecialchars($user['username']) . "! Je bent ingelogd als een " . htmlspecialchars($user['role']) . ".";
         if($user['role'] == 'Client'){
             header('Location: menu.php');
             exit();

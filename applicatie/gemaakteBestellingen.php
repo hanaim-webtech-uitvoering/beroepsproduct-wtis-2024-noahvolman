@@ -42,6 +42,11 @@ function getStatusName($status) {
     </style>
 </head>
 <body>
+    <nav>
+        <a href="menu.php">Menu</a>
+        <a href="gemaakteBestellingen.php">Gemaakte Bestellingen</a>
+        <a href="logout.php">Uitloggen</a>
+    </nav>
     <h1>Gemaakte Bestellingen</h1>
     <?php
     if (!empty($order_details)) {

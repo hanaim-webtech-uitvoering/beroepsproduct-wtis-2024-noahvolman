@@ -50,6 +50,11 @@ function getStatusName($status) {
     </style>
 </head>
 <body>
+<nav>
+    <a href="bestellingOverzicht.php">Bestelling Overzicht</a>
+    <a href="logout.php">Uitloggen</a>
+</nav>
+
     <h1>Bestelling Overzicht</h1>
     <?php
     if (!empty($order_details)) {
