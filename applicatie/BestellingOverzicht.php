@@ -23,6 +23,19 @@ $db = maakVerbinding();
 $query = 'SELECT order_id,status FROM Pizza_Order';
 $data = $db->query($query);
 $order_details = $data->fetchAll();
+
+function getStatusName($status) {
+    switch ($status) {
+        case 1:
+            return 'in afwachting';
+        case 2:
+            return 'bezig';
+        case 3:
+            return 'voltooid';
+        default:
+            return 'Unknown';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,11 +54,12 @@ $order_details = $data->fetchAll();
     <?php
     if (!empty($order_details)) {
         echo '<table>';
-        echo '<tr><th>Order ID</th><th>Status</th><th>verander status</th></tr>';
+        echo '<tr><th>Order ID</th><th>Status</th><th>verander status</th><th>Details</th></tr>';
         foreach ($order_details as $detail) {
+            $status_name = getStatusName($detail['status']);
             echo '<tr>';
             echo '<td>' . htmlspecialchars($detail['order_id']) . '</td>';
-            echo '<td>' . htmlspecialchars($detail['status']) . '</td>';
+            echo '<td>' . htmlspecialchars($status_name) . '</td>';
             echo '<td>
                 <form method="post" style="display:inline;">
                     <input type="hidden" name="order_id" value="' . htmlspecialchars($detail['order_id']) . '">
@@ -57,6 +71,7 @@ $order_details = $data->fetchAll();
                     <button type="submit">Update</button>
                 </form>
             </td>';
+            echo '<td><a href="detailOverzicht.php?order_id=' . htmlspecialchars($detail['order_id']) . '">Bekijk Details</a></td>';
             echo '</tr>';
         }
         echo '</table>';
