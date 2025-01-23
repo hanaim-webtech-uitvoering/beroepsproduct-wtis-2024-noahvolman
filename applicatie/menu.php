@@ -72,7 +72,7 @@ $html_table .= '</table>';
     if (!empty($_SESSION['bestelling'])) {
         echo '<ul>';
         foreach ($_SESSION['bestelling'] as $product => $aantal) {
-            echo "<li>$product: $aantal</li>";
+            echo "<li>$product: $aantal </li>";
         }
         echo '</ul>';
     } else {

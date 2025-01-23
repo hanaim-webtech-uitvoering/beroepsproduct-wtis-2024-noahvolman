@@ -20,8 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['role'] = $user['role'];
 
             echo "Welkom, " . htmlspecialchars($user['username']) . "! Je bent ingelogd als een " . htmlspecialchars($user['role']) . ".";
+        if($user['role'] == 'Client'){
             header('Location: menu.php');
             exit();
+        } else {
+            header('Location: bestellingOverzicht.php');
+            exit();
+        }
         } else {
             echo "Ongeldige gebruikersnaam of wachtwoord.";
         }
