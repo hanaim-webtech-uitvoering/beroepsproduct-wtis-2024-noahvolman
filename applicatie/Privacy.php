@@ -15,15 +15,6 @@
         p {
             line-height: 1.6;
         }
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 15px;
-            background-color: #007BFF;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-        }
         .back-link:hover {
             background-color: #0056b3;
         }
