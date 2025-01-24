@@ -277,17 +277,11 @@ update Pizza_Order set [datetime] = DATEADD(minute, @diff, datetime);
 -- update statment om alle wachtwoorden die al bestonden te hashen
 update "User"
 set 
-password = '$2y$10$LfmrQp5eUzd5VbUTss64ueR62Zbhx/ceqE7J25/BMpbI2drSckIVW'
+password = '$2y$10$.JN6t./m0QTssTcKMqGSFuf.qxwJrXYBUsG6eGBJhdWZw9dsnlFNS'
 where password = 'wachtwoord'
 
 -- Insert statement voor een gast account
 INSERT INTO "User" (username, password, first_name, last_name, address, role)
-VALUES ('gast', '$2y$10$983cxUIPuEezkFdcCrA2be6m0.hiKNb.SoFL46ILBwIviApCTAk9W', 'Gast', 'Gebruiker', 'adres_placeholder', 'Guest');
-
--- update statment voor een gast account
-update "User"
-set
-role = 'guest'
-where username = 'gast'
+VALUES ('gast', '$2y$10$983cxUIPuEezkFdcCrA2be6m0.hiKNb.SoFL46ILBwIviApCTAk9W', 'Gast', 'Gebruiker', 'adres_placeholder', 'guest');
 
 go

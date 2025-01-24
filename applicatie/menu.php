@@ -11,8 +11,16 @@ if (!isset($_SESSION['role'])) {
     $_SESSION['role'] = 'guest';
 }
 
+// Genereer een CSRF-token als deze nog niet bestaat
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Verwerk adresinvoer
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['address'])) {
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die('Ongeldige CSRF-token');
+    }
     $address = trim($_POST['address']);
     if (!empty($address)) {
         $_SESSION['address'] = $address;
@@ -23,36 +31,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['address'])) {
     }
 }
 
-// Verwerk formulierinvoer
+// Verwerk formulierinvoer voor het toevoegen van producten aan de bestelling
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product'], $_POST['aantal'])) {
-        // Controleer of het adres is ingesteld
-        if (!isset($_SESSION['address'])) {
-            $address_error = "Je moet eerst je adres invoeren voordat je een bestelling kunt plaatsen.";
-        } else {
-            $product = $_POST['product'];
-            $aantal = (int)$_POST['aantal'];
+    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die('Ongeldige CSRF-token');
+    }
+    // Controleer of het adres is ingesteld
+    if (!isset($_SESSION['address'])) {
+        $address_error = "Je moet eerst je adres invoeren voordat je een bestelling kunt plaatsen.";
+    } else {
+        $product = trim($_POST['product']);
+        $aantal = (int)$_POST['aantal'];
 
-            if ($aantal > 0) {
+        if ($aantal > 0) {
+            // Haal de prijs van het product op
+            $db = maakVerbinding();
+            $stmt = $db->prepare('SELECT price FROM Product WHERE name = ?');
+            $stmt->execute([$product]);
+            $result = $stmt->fetch();
+            $prijs = $result['price'];
 
-                // Haal de prijs van het product op
-                $db = maakVerbinding();
-                $stmt = $db->prepare('SELECT price FROM Product WHERE name = ?');
-                $stmt->execute([$product]);
-                $result = $stmt->fetch();
-                $prijs = $result['price'];
-
-                // Voeg het product toe aan de bestelling
-                if (isset($_SESSION['bestelling'][$product])) {
-                    $_SESSION['bestelling'][$product]['aantal'] += $aantal;
-                } else {
-                    $_SESSION['bestelling'][$product] = ['aantal' => $aantal, 'prijs' => $prijs];
-                }
-                // Redirect naar dezelfde pagina om het POST-verzoek te voorkomen bij het vernieuwen
-                header('Location: menu.php');
-                exit();
+            // Voeg het product toe aan de bestelling
+            if (isset($_SESSION['bestelling'][$product])) {
+                $_SESSION['bestelling'][$product]['aantal'] += $aantal;
+            } else {
+                $_SESSION['bestelling'][$product] = ['aantal' => $aantal, 'prijs' => $prijs];
             }
+            // Redirect naar dezelfde pagina om het POST-verzoek te voorkomen bij het vernieuwen
+            header('Location: menu.php');
+            exit();
         }
     }
+}
 
 // Haal menu-items op uit de database
 $db = maakVerbinding();
@@ -72,6 +82,7 @@ while ($rij = $data->fetch()) {
         <td>€$prijs</td>
         <td>
             <form method='post'>
+                <input type='hidden' name='csrf_token' value='" . htmlspecialchars($_SESSION['csrf_token']) . "'>
                 <input type='hidden' name='product' value='$product'>
                 <input type='number' name='aantal' min='1' value='1' style='width: 50px;'>
                 <button type='submit'>Toevoegen</button>
@@ -126,22 +137,25 @@ $html_table .= '</table>';
         echo "<li><strong>Totaal: €$totaal_bedrag</strong></li>";
         echo '</ul>';
         echo '<form method="post" action="verwerkBestelling.php">
+                <input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token']) . '">
                 <button type="submit">Bestelling Plaatsen</button>
               </form>';
     } else {
         echo '<p>Je hebt nog niets toegevoegd aan je bestelling.</p>';
     }
- // Toon het adresformulier als het adres niet is ingesteld
- if (!isset($_SESSION['address'])) {
-    echo '<h2>Voer je adres in om een bestelling te plaatsen</h2>';
-    if (isset($address_error)) {
-        echo '<p style="color:red;">' . htmlspecialchars($address_error) . '</p>';
+
+    // Toon het adresformulier als het adres niet is ingesteld
+    if (!isset($_SESSION['address'])) {
+        echo '<h2>Voer je adres in om een bestelling te plaatsen</h2>';
+        if (isset($address_error)) {
+            echo '<p style="color:red;">' . htmlspecialchars($address_error) . '</p>';
+        }
+        echo '<form method="post">
+                <input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token']) . '">
+                <label>Adres: <input type="text" name="address" required></label>
+                <button type="submit">Opslaan</button>
+              </form>';
     }
-    echo '<form method="post">
-            <label>Adres: <input type="text" name="address" required></label>
-            <button type="submit">Opslaan</button>
-          </form>';
-}
-?>
+    ?>
 </body>
 </html>
